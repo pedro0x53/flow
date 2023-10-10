@@ -13,7 +13,7 @@ public extension Hashable where Self: Identifiable {
     }
 }
 
-public extension Hashable where Self: RawRepresentable, RawValue == String {
+public extension RawRepresentable where Self: Hashable, Self.RawValue == String {
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.rawValue)
     }
