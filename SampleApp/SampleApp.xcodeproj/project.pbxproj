@@ -26,10 +26,9 @@
 		FEC653B42AC498500050EE2F /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B12AC498500050EE2F /* AppCoordinator.swift */; };
 		FEC653B62AC498500050EE2F /* AppTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B32AC498500050EE2F /* AppTabBar.swift */; };
 		FEC653BC2AC49F6F0050EE2F /* DashboardCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B72AC49F6F0050EE2F /* DashboardCoordinatorTests.swift */; };
-		FEC653BD2AC49F6F0050EE2F /* LoginLoginCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B82AC49F6F0050EE2F /* LoginLoginCoordinatorTests.swift */; };
+		FEC653BD2AC49F6F0050EE2F /* LoginCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B82AC49F6F0050EE2F /* LoginCoordinatorTests.swift */; };
 		FEC653BE2AC49F6F0050EE2F /* AppCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653B92AC49F6F0050EE2F /* AppCoordinatorTests.swift */; };
 		FEC653BF2AC49F6F0050EE2F /* ProjectCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653BA2AC49F6F0050EE2F /* ProjectCoordinatorTests.swift */; };
-		FEC653C02AC49F6F0050EE2F /* VideoRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC653BB2AC49F6F0050EE2F /* VideoRouterTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +47,7 @@
 		FE1640AA2AC48E6F0073317C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FE1640AD2AC48E6F0073317C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FE1640B32AC48E6F0073317C /* SampleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SampleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE65842B2AD61D4C00EC891D /* SampleApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = SampleApp.xctestplan; sourceTree = "<group>"; };
 		FEC653922AC4982F0050EE2F /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FEC653942AC4982F0050EE2F /* VideoRouter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoRouter.swift; sourceTree = "<group>"; };
 		FEC653952AC4982F0050EE2F /* VideoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
@@ -63,10 +63,9 @@
 		FEC653B12AC498500050EE2F /* AppCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		FEC653B32AC498500050EE2F /* AppTabBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppTabBar.swift; sourceTree = "<group>"; };
 		FEC653B72AC49F6F0050EE2F /* DashboardCoordinatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DashboardCoordinatorTests.swift; sourceTree = "<group>"; };
-		FEC653B82AC49F6F0050EE2F /* LoginLoginCoordinatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginLoginCoordinatorTests.swift; sourceTree = "<group>"; };
+		FEC653B82AC49F6F0050EE2F /* LoginCoordinatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginCoordinatorTests.swift; sourceTree = "<group>"; };
 		FEC653B92AC49F6F0050EE2F /* AppCoordinatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinatorTests.swift; sourceTree = "<group>"; };
 		FEC653BA2AC49F6F0050EE2F /* ProjectCoordinatorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProjectCoordinatorTests.swift; sourceTree = "<group>"; };
-		FEC653BB2AC49F6F0050EE2F /* VideoRouterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoRouterTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +90,7 @@
 		FE16409A2AC48E6D0073317C = {
 			isa = PBXGroup;
 			children = (
+				FE65842B2AD61D4C00EC891D /* SampleApp.xctestplan */,
 				FE1640A52AC48E6D0073317C /* SampleApp */,
 				FE1640B62AC48E6F0073317C /* SampleAppTests */,
 				FE1640A42AC48E6D0073317C /* Products */,
@@ -130,9 +130,8 @@
 			children = (
 				FEC653B92AC49F6F0050EE2F /* AppCoordinatorTests.swift */,
 				FEC653B72AC49F6F0050EE2F /* DashboardCoordinatorTests.swift */,
-				FEC653B82AC49F6F0050EE2F /* LoginLoginCoordinatorTests.swift */,
+				FEC653B82AC49F6F0050EE2F /* LoginCoordinatorTests.swift */,
 				FEC653BA2AC49F6F0050EE2F /* ProjectCoordinatorTests.swift */,
-				FEC653BB2AC49F6F0050EE2F /* VideoRouterTests.swift */,
 			);
 			path = SampleAppTests;
 			sourceTree = "<group>";
@@ -351,8 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FEC653BE2AC49F6F0050EE2F /* AppCoordinatorTests.swift in Sources */,
-				FEC653C02AC49F6F0050EE2F /* VideoRouterTests.swift in Sources */,
-				FEC653BD2AC49F6F0050EE2F /* LoginLoginCoordinatorTests.swift in Sources */,
+				FEC653BD2AC49F6F0050EE2F /* LoginCoordinatorTests.swift in Sources */,
 				FEC653BC2AC49F6F0050EE2F /* DashboardCoordinatorTests.swift in Sources */,
 				FEC653BF2AC49F6F0050EE2F /* ProjectCoordinatorTests.swift in Sources */,
 			);

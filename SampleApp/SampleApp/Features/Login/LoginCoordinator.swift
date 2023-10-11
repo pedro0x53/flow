@@ -11,22 +11,19 @@ import Flow
 class LoginCoordinator: StackCoordinator, Presented {
     let id: UUID = UUID()
 
-    @Published var path: NavigationPath = NavigationPath()
-    var breadcrumbs: [any Hashable] = []
+    @Published var path: NavigationPath
 
     var onDismiss: (() -> Void)?
     
-    required init(path: [any Hashable]) {
-        self.breadcrumbs = path
-        path.forEach { self.path.append($0) }
-        self.onDismiss = nil
+    required init(path: NavigationPath) {
+        fatalError("Use designated initializer init(path:onDismiss:)")
     }
 
-    required init(onDismiss: (() -> Void)? = nil) {
-        self.onDismiss = onDismiss
+    required init(onDismiss: (() -> Void)?) {
+        fatalError("Use designated initializer init(path:onDismiss:)")
     }
 
-    init(path: NavigationPath = NavigationPath(),
+    init(path: NavigationPath = .init(),
          onDismiss: (() -> Void)? = nil) {
         self.path = path
         self.onDismiss = onDismiss
@@ -42,7 +39,7 @@ class LoginCoordinator: StackCoordinator, Presented {
 }
 
 extension LoginCoordinator {
-    enum Coordinates: String, Hashable {
+    enum Coordinates: String, Hashable, Identifiable {
         case forgetPassword
     }
 }

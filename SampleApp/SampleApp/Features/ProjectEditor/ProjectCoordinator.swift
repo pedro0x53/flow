@@ -12,26 +12,21 @@ class ProjectCoordinator: Presented, StackCoordinator {
     let id: UUID = UUID()
 
     @Published var path: NavigationPath = NavigationPath()
-    var breadcrumbs: [any Hashable] = []
 
     var onDismiss: (() -> Void)?
 
-    required init(path: [any Hashable]) {
-        self.onDismiss = nil
-        self.breadcrumbs = path
-        path.forEach { self.path.append($0) }
+    required init(path: NavigationPath) {
+        fatalError("Use designated initializer init(path:onDismiss:)")
     }
 
-    required init(onDismiss: (() -> Void)? = nil) {
-        self.onDismiss = onDismiss
-        self.path = NavigationPath()
+    required init(onDismiss: (() -> Void)?) {
+        fatalError("Use designated initializer init(path:onDismiss:)")
     }
 
-    init(path: [any Hashable],
+    init(path: NavigationPath = .init(),
          onDismiss: (() -> Void)? = nil) {
         self.onDismiss = onDismiss
-        self.breadcrumbs = path
-        path.forEach { self.path.append($0) }
+        self.path = path
     }
 
     @ViewBuilder func build() -> some View {
@@ -44,12 +39,8 @@ class ProjectCoordinator: Presented, StackCoordinator {
 }
 
 extension ProjectCoordinator {
-    enum Coordinates: String, Hashable {
+    enum Coordinates: String, Hashable, Identifiable {
         case additional
-
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(self.rawValue)
-        }
     }
 }
 

@@ -36,7 +36,7 @@ struct AppTabBar: View {
                 .tag(AppCoordinator.Tabs.settings)
         }
         .fullScreenCover(isPresented: $appCoordinator.shouldLogIn) {
-            LoginCoordinator {
+            LoginCoordinator(path: .init()) {
                 self.appCoordinator.dismiss(sheet: .login)
             }
             .build()

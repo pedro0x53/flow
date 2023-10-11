@@ -39,7 +39,6 @@ final class DashboardCoordinatorTests: XCTestCase {
     func test_dashboardCoordinator_logOut() {
         sut.logOut()
 
-        XCTAssertTrue(sut.breadcrumbs.isEmpty)
         XCTAssertTrue(sut.appCoordinator!.shouldLogIn)
     }
 }

@@ -21,18 +21,17 @@ class DashboardCoordinator: StackCoordinator {
 
     @Published var isPresentingProjectEditor: Bool = false
     @Published var path: NavigationPath = NavigationPath()
-    var breadcrumbs: [any Hashable] = []
 
-    required init(path: [any Hashable]) {
+    required init(path: NavigationPath) {
         fatalError("Use the conveniece initializer init(appCoordinator:path:isPresentingProjectEditor:)")
     }
 
     init(appCoordinator: AppCoordinator? = nil,
-         path: [any Hashable] = [],
+         path: NavigationPath = .init(),
          isPresentingProjectEditor: Bool = false) {
         self.appCoordinator = appCoordinator
         self.isPresentingProjectEditor = isPresentingProjectEditor
-        self.breadcrumbs = path
+        self.path = path
 
         let projectEditor = ProjectCoordinator()
         self.projectEditorCoordinator = projectEditor
@@ -45,8 +44,6 @@ class DashboardCoordinator: StackCoordinator {
         self.projectEditorCoordinator.onDismiss {
             self.dismiss(sheet: .projectEditor)
         }
-
-        path.forEach { self.path.append($0) }
     }
 
     @ViewBuilder func build() -> some View {

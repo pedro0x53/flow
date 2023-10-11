@@ -25,3 +25,10 @@ extension VideoRouter {
         lhs.id == rhs.id
     }
 }
+
+extension VideoRouter {
+    enum Coordinates: String, Hashable, Identifiable {
+        case channel
+        case report
+    }
+}
