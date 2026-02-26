@@ -1,7 +1,7 @@
 import SwiftUI
 import Flow
 
-struct FirstTab: FlowView {
+struct FirstTab: View {
     @State var presenter: FlowPresenter = .init()
 
     var body: some View {

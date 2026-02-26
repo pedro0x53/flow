@@ -15,7 +15,7 @@ Add Flow to your project via Xcode (File → Add Package Dependencies) or by add
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/your-username/Flow.git", from: "2.0.0")
+    .package(url: "https://github.com/pedro0x53/flow", from: "2.0.0")
 ]
 ```
 
@@ -56,7 +56,7 @@ struct SettingsView: FlowView {
     }
 }
 
-// Option 2: Enum routes with associated values (for deep linking)
+// Option 2: Enum routes with associated values (for path persistence)
 enum AppRoute: FlowRoute {
     case profile(userId: String)
     case settings
@@ -273,29 +273,31 @@ struct HomeTab: FlowView {
 
 ---
 
-## Codable & Deep Linking
+## Codable & Path Persistence
 
-Flow routes and coordinators conform to `Codable` to support:
+Flow coordinators conform to `Codable` to support path persistence and restoration. The `FlowRoute` protocol does not require `Codable`—use it when you need persistable navigation.
 
-- Path persistence and restoration
-- Deep linking via URL parsing
+### When to use Codable routes
 
-### FlowRoute
-
-`FlowRoute` requires `Codable`. Use enums or structs whose stored properties are `Codable`:
+- **Path persistence** — Encoding the coordinator (e.g. for state restoration) only succeeds when every value in the path is `Codable`.
+- **Enum routes** — Raw-value or associated-value enums are typically `Codable` and work well:
 
 ```swift
-enum AppRoute: FlowRoute {
+enum AppRoute: Int, FlowRoute {
     case home
-    case profile(userId: String)
+    case profile
     case settings
-    // ...
+
+    var destination: some View { /* ... */ }
 }
 ```
 
+- **FlowView** — Struct views conform to `Codable` only if their stored properties are `Codable`. Views with `@State`, `@StateObject`, or other non-Codable properties cannot participate in path persistence.
+- **`push` overload** — Use `push` with a `Codable` route to get compile-time assurance that the path can be encoded.
+
 ### Path Persistence
 
-`FlowStackCoordinator` uses `NavigationPath.CodableRepresentation` for encoding and decoding the stack, so paths can be saved and restored.
+`FlowStackCoordinator` uses `NavigationPath.CodableRepresentation` for encoding and decoding the stack. If the path contains any non-Codable value, encoding throws `EncodingError.invalidValue` with "Path contains non-Codable values".
 
 ---
 

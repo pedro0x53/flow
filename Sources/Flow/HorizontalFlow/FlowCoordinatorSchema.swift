@@ -6,6 +6,7 @@ public protocol FlowCoordinatorSchema: AnyObject, Codable {
     init(path: P)
 
     func push<D: Hashable>(_ destination: D)
+    func push<D: Hashable & Codable>(_ destination: D)
     func pop(_ count: Int)
     func popToRoot()
 }

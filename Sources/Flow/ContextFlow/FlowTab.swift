@@ -5,7 +5,11 @@ public enum FlowTabImage: Codable {
     case named(String)
 }
 
-public protocol FlowTab: FlowRoute, Sendable, Codable {
+public protocol FlowTab: Hashable, Sendable, Codable {
+    associatedtype Destination: View
+    @ViewBuilder
+    var destination: Destination { get }
+
     var title: String { get }
     var image: FlowTabImage { get }
 }

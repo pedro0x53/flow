@@ -1,22 +1,21 @@
 import SwiftUI
 import Flow
 
-struct SecondTab: FlowView {
+struct SecondTab: View {
     @State var coordinator: FlowStackCoordinator = .init()
 
     var body: some View {
         FlowStack(coordinator: coordinator) {
             VStack(spacing: 8) {
                 Text("SecondTab")
-                    .destination(ViewA.self)
-                    .destination(ViewB.self)
+                    .destination(SecondTabRoutes.self)
 
                 Button("Push A") {
-                    coordinator.push(ViewA())
+                    coordinator.push(SecondTabRoutes.viewA)
                 }
 
                 Button("Push B") {
-                    coordinator.push(ViewB())
+                    coordinator.push(SecondTabRoutes.viewB)
                 }
             }
         }

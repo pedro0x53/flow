@@ -14,6 +14,10 @@ public final class FlowStackCoordinator: FlowCoordinatorSchema {
         path.append(destination)
     }
 
+    public func push<D: Hashable & Codable>(_ destination: D) {
+        path.append(destination)
+    }
+
     public func pop(_ count: Int = 1) {
         guard count <= path.count
         else {
