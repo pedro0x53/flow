@@ -3,17 +3,19 @@ import Observation
 import SwiftUI
 
 @Observable
-public final class FlowTabCoordinator<TabOptions: FlowTabOptions>: Codable {
-    public var selectedTab: TabOptions.Tabs
+public final class FlowTabCoordinator<Options: FlowTabOptions> {
+    public var selectedTab: Options.Tab
 
-    public init(tab: TabOptions.Tabs) {
+    public init(tab: Options.Tab) {
         self.selectedTab = tab
     }
 
-    public func select(tab: TabOptions.Tabs) {
+    public func select(tab: Options.Tab) {
         self.selectedTab = tab
     }
+}
 
+extension FlowTabCoordinator: Codable where Options.Tab: Codable {
     // MARK: Codable conformance
     private enum CodingKeys: String, CodingKey {
         case selectedTab
@@ -21,7 +23,7 @@ public final class FlowTabCoordinator<TabOptions: FlowTabOptions>: Codable {
 
     public convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let tab = try container.decode(TabOptions.Tabs.self, forKey: .selectedTab)
+        let tab = try container.decode(Options.Tab.self, forKey: .selectedTab)
         self.init(tab: tab)
     }
 

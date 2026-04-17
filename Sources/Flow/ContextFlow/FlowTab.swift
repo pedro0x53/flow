@@ -1,22 +1,23 @@
 import SwiftUI
 
-public enum FlowTabImage: Codable {
-    case system(String)
-    case named(String)
+public protocol FlowTab: Hashable, Codable {
+    var label: FlowTabLabel { get }
 }
 
-public protocol FlowTab: Hashable, Sendable, Codable {
-    associatedtype Destination: View
-    @ViewBuilder
-    var destination: Destination { get }
-
-    var title: String { get }
-    var image: FlowTabImage { get }
+public extension FlowTab {
+    var title: String { label.title }
+    var image: String { label.image.name }
 }
 
-public protocol FlowTabOptions: Codable {
-    associatedtype Tabs: FlowTab
-    static var tabs: [Tabs] { get }
+extension Tab where Value: FlowTab, Label == DefaultTabLabel, Content: View {
+    public init(_ tab: Value, @ViewBuilder content: () -> Content) {
+        self.init(
+            tab.title,
+            systemImage: tab.image,
+            value: tab,
+            content: content
+        )
+    }
 }
 
 public protocol FlowTabs: FlowTab, FlowTabOptions {}

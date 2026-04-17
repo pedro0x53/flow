@@ -3,11 +3,19 @@ import Flow
 
 @main
 struct FlowExampleApp: App {
-    let tabCoordinator = FlowTabCoordinator<MyTabs>(tab: .first)
+    @State var tabCoordinator = FlowTabCoordinator<MyTabs>(tab: .first)
 
     var body: some Scene {
         WindowGroup {
-            FlowTabView(tabCoordinator: tabCoordinator)
+            FlowTabView(tabCoordinator: tabCoordinator) {
+                Tab(MyTabs.first) {
+                    FirstTab()
+                }
+
+                Tab(MyTabs.second) {
+                    FirstTab()
+                }
+            }
         }
     }
 }

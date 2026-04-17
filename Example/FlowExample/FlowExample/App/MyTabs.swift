@@ -1,37 +1,13 @@
-import SwiftUI
 import Flow
 
-enum MyTabs: String, CaseIterable, FlowTabs {
+enum MyTabs: FlowTabs, CaseIterable {
     case first
     case second
 
-    static var tabs: [MyTabs] { MyTabs.allCases }
-
-    var title: String {
+    var label: FlowTabLabel {
         switch self {
-        case .first:
-            return "First"
-        case .second:
-            return "Second"
-        }
-    }
-
-    var image: FlowTabImage {
-        switch self {
-        case .first:
-            return .system("star")
-        case .second:
-            return .system("heart")
-        }
-    }
-
-    @ViewBuilder
-    var destination: some View {
-        switch self {
-        case .first:
-            FirstTab()
-        case .second:
-            SecondTab()
+        case .first:  .init("First", .system("heart"))
+        case .second: .init("Second", .system("star"))
         }
     }
 }
