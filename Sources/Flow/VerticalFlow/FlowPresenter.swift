@@ -2,7 +2,16 @@ import Observation
 
 @Observable
 public final class FlowPresenter: Codable {
-    public var isPresented: Bool = false
+    public var isPresented: Bool = false {
+        didSet {
+            if isPresented {
+                onPresent?()
+            } else {
+                onDismiss?()
+            }
+        }
+    }
+
     public private(set) var onPresent: (() -> Void)? = nil
     public private(set) var onDismiss: (() -> Void)? = nil
 
@@ -16,12 +25,10 @@ public final class FlowPresenter: Codable {
 
     public func present() {
         self.isPresented = true
-        onPresent?()
     }
 
     public func dismiss() {
         self.isPresented = false
-        onDismiss?()
     }
 
     public func setOnPresent(_ onPresent: @escaping () -> Void) {

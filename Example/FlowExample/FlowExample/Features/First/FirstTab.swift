@@ -10,6 +10,15 @@ struct FirstTab: View {
             Toggle("Present Sheet", isOn: $presenter.isPresented)
                 .toggleStyle(.button)
         }
+        .onAppear {
+            presenter.setOnPresent {
+                print("View Presented")
+            }
+
+            presenter.setOnDismiss {
+                print("View Dismissed")
+            }
+        }
         .sheet(presenter) {
             Text("Presented View")
         }
