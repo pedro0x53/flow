@@ -13,9 +13,7 @@ public final class FlowTabCoordinator<Options: FlowTabOptions>: Codable {
     public func select(tab: Options.Tab) {
         self.selectedTab = tab
     }
-}
 
-extension FlowTabCoordinator {
     // MARK: Codable conformance
     private enum CodingKeys: String, CodingKey {
         case selectedTab
