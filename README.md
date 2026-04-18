@@ -1,6 +1,6 @@
 # Flow
 
-A SwiftUI navigation library for type-safe stack navigation, sheet presentation, and tab-based layouts.
+A SwiftUI navigation library for type-safe stack navigation, sheet presentation, and tab-based layouts — built on top of `NavigationStack`, `TabView`, and the `sheet` / `fullScreenCover` modifiers, but with observable coordinators so you can drive navigation from anywhere in your view hierarchy.
 
 ## Requirements
 
@@ -21,77 +21,56 @@ dependencies: [
 
 ## Overview
 
-Flow is organized into three layers:
+Flow is organized into three layers, each solving a different navigation problem:
 
 | Layer | Purpose |
 |-------|---------|
-| **Horizontal Flow** | Stack navigation (push/pop) with `NavigationStack` |
-| **Vertical Flow** | Sheet presentation |
-| **Context Flow** | Tab-based navigation |
+| **Horizontal Flow** | Stack navigation (push/pop) backed by `NavigationStack` |
+| **Vertical Flow** | Sheet and full-screen cover presentation |
+| **Context Flow** | Tab-based navigation backed by `TabView` |
+
+The three layers are independent and composable — you can mix and match them freely. There's a working `Example/` app in the repo that shows most of the patterns below in practice.
 
 ---
 
 ## Horizontal Flow
 
-Stack navigation with `FlowStack`, `FlowStackCoordinator`, and `FlowRoute`.
+Stack navigation is built around three pieces: `FlowStack` (the container view), `FlowStackCoordinator` (an `@Observable` object that owns the `NavigationPath`), and `FlowRoute` (a protocol your routes conform to).
 
 ### Define Routes
 
-Conform to `FlowRoute` (or `FlowView` if the route is also a `View`):
+A `FlowRoute` is just a `Hashable & Codable` value. The usual way to model one is an enum — each case represents a screen, and you use `.navigationDestination(for:)` to resolve cases into views.
 
 ```swift
 import Flow
 import SwiftUI
 
-// Option 1: FlowView — route and view are the same
-struct ProfileView: FlowView {
-    var body: some View {
-        Text("Profile")
-    }
-}
-
-struct SettingsView: FlowView {
-    var body: some View {
-        Text("Settings")
-    }
-}
-
-// Option 2: Enum routes with associated values (for path persistence)
-enum AppRoute: FlowRoute {
-    case profile(userId: String)
-    case settings
-
-    @ViewBuilder
-    var destination: some View {
-        switch self {
-        case .profile(let userId):
-            ProfileDetailView(userId: userId)
-        case .settings:
-            SettingsView()
-        }
-    }
+enum SecondTabRoutes: FlowRoute {
+    case viewA
+    case viewB
 }
 ```
 
 ### Set Up the Stack
 
+Create a `FlowStackCoordinator`, hand it to `FlowStack`, and attach a `.navigationDestination(for:)` for your route type. The coordinator is available in the environment, so child views can read it with `@Environment(FlowStackCoordinator.self)`.
+
 ```swift
-struct ContentView: View {
-    @State var coordinator = FlowStackCoordinator()
+struct SecondTab: View {
+    @State var coordinator: FlowStackCoordinator = .init()
 
     var body: some View {
         FlowStack(coordinator: coordinator) {
-            VStack(spacing: 16) {
-                Text("Home")
-                    .destination(ProfileView.self)
-                    .destination(SettingsView.self)
-
-                Button("Go to Profile") {
-                    coordinator.push(ProfileView())
+            VStack {
+                Button("Push A") {
+                    coordinator.push(SecondTabRoutes.viewA)
                 }
-
-                Button("Go to Settings") {
-                    coordinator.push(SettingsView())
+            }
+            .navigationTitle("SecondTab")
+            .navigationDestination(for: SecondTabRoutes.self) { route in
+                switch route {
+                case .viewA: ViewA()
+                case .viewB: ViewB()
                 }
             }
         }
@@ -103,7 +82,7 @@ struct ContentView: View {
 
 ```swift
 // Push
-coordinator.push(ProfileView())
+coordinator.push(SecondTabRoutes.viewA)
 
 // Pop one screen
 coordinator.pop()
@@ -111,114 +90,144 @@ coordinator.pop()
 // Pop multiple screens
 coordinator.pop(2)
 
-// Pop to root
+// Pop to root (also called automatically if `pop(count:)` is asked to pop more screens than exist)
 coordinator.popToRoot()
 ```
+
+### FlowRoute as a NavigationLink
+
+Because `FlowRoute` implements `callAsFunction`, every route value doubles as a link builder. This removes the boilerplate of wrapping every `NavigationLink` by hand — the route carries both the identity and the link sugar.
+
+```swift
+// With a title
+SecondTabRoutes.viewB("Push B")
+
+// With a custom label view
+SecondTabRoutes.viewB {
+    Text("Push B")
+        .foregroundStyle(.blue)
+}
+
+// With a custom label AND a custom destination
+// (bypasses navigationDestination — handy for ad-hoc links)
+SecondTabRoutes.viewB {
+    Text("Push B")
+} destination: {
+    ViewB()
+}
+```
+
+The first two variants route through `.navigationDestination(for:)`, so they share the same resolution logic as the imperative `coordinator.push(...)`. The third variant provides its destination inline, so it doesn't need the route to be registered.
 
 ---
 
 ## Vertical Flow
 
-Sheet presentation with `FlowPresenter` and the `sheet(_:_:)` modifier.
+Sheet and full-screen presentation use `FlowPresenter` — an observable object that tracks `isPresented` — together with the `.sheet(_:_:)` and `.fullScreenCover(_:_:)` modifiers Flow adds to `View`.
 
 ### Present a Sheet
+
+Drive presentation either by calling `present()` on the presenter or by binding `isPresented` directly (e.g. to a Toggle).
 
 ```swift
 import Flow
 import SwiftUI
 
-struct ContentView: View {
-    @State var presenter = FlowPresenter()
+struct FirstTab: View {
+    @State var presenter: FlowPresenter = .init()
 
     var body: some View {
-        Button("Present Sheet") {
-            presenter.present()
+        VStack(spacing: 8) {
+            Text("FirstTab")
+            Toggle("Present Sheet", isOn: $presenter.isPresented)
+                .toggleStyle(.button)
         }
         .sheet(presenter) {
-            Text("Sheet Content")
+            Text("Presented View")
         }
     }
 }
 ```
 
-### Dismiss and Lifecycle Callbacks
+For a full-screen cover, swap `.sheet(presenter)` for `.fullScreenCover(presenter)` — same API.
+
+### Dismiss from the Presented View
+
+The presenter is injected into the presented view's environment, so the child view can dismiss itself without the parent wiring anything up:
 
 ```swift
 struct DetailView: View {
     @Environment(FlowPresenter.self) var presenter
 
     var body: some View {
-        VStack {
-            Text("Detail")
-            Button("Dismiss") {
-                presenter.dismiss()
-            }
+        Button("Dismiss") {
+            presenter.dismiss()
         }
     }
 }
-
-// With callbacks
-let presenter = FlowPresenter()
-presenter.setOnPresent { print("Sheet presented") }
-presenter.setOnDismiss { print("Sheet dismissed") }
 ```
+
+### Lifecycle Callbacks
+
+`FlowPresenter` exposes `onPresent` and `onDismiss` hooks. Set them at init time or attach them later (e.g. in `.onAppear`):
+
+```swift
+.onAppear {
+    presenter.setOnPresent { print("View Presented") }
+    presenter.setOnDismiss { print("View Dismissed") }
+}
+```
+
+These hooks are called whenever the `presenter.isPresented` changes.
 
 ---
 
 ## Context Flow
 
-Tab navigation with `FlowTabView`, `FlowTabCoordinator`, and `FlowTab`.
+Tab navigation uses `FlowTabView` (the container), `FlowTabCoordinator` (the selection state), and a `FlowTabs` enum that describes your tabs.
 
 ### Define Tabs
 
+Conform an enum to `FlowTabs` (which is `FlowTab + FlowTabOptions`). The only required property is `label: FlowTabLabel`, which pairs a title with an icon. Marking the enum `CaseIterable` is enough to satisfy `FlowTabOptions` — you get the `tabs` array for free.
+
 ```swift
 import Flow
-import SwiftUI
 
-enum MyTabs: String, CaseIterable, FlowTabs {
-    case home
-    case search
-    case profile
+enum MyTabs: FlowTabs, CaseIterable {
+    case first
+    case second
 
-    static var tabs: [MyTabs] { MyTabs.allCases }
-
-    var title: String {
+    var label: FlowTabLabel {
         switch self {
-        case .home: return "Home"
-        case .search: return "Search"
-        case .profile: return "Profile"
-        }
-    }
-
-    var image: FlowTabImage {
-        switch self {
-        case .home: return .system("house")
-        case .search: return .system("magnifyingglass")
-        case .profile: return .system("person")
-        }
-    }
-
-    @ViewBuilder
-    var destination: some View {
-        switch self {
-        case .home: HomeTab()
-        case .search: SearchTab()
-        case .profile: ProfileTab()
+        case .first:  .init("First", .system("heart"))
+        case .second: .init("Second", .system("star"))
         }
     }
 }
 ```
 
+`FlowTabLabel` takes a title and a `FlowTabImage`, which is either `.system("SF Symbol name")` or `.named("Asset name")`.
+
 ### Set Up the Tab View
+
+Instantiate a `FlowTabCoordinator` with the initial tab, pass it to `FlowTabView`, and use each case's `callAsFunction` to build its content.
 
 ```swift
 @main
-struct MyApp: App {
-    let tabCoordinator = FlowTabCoordinator<MyTabs>(tab: .home)
+struct FlowExampleApp: App {
+    @State var tabCoordinator = FlowTabCoordinator<MyTabs>(tab: .first)
 
     var body: some Scene {
         WindowGroup {
-            FlowTabView(tabCoordinator: tabCoordinator)
+            FlowTabView(tabCoordinator: tabCoordinator) {
+                MyTabs.first {
+                    FirstTab()
+                }
+
+                MyTabs.second {
+                    SecondTab()
+                }
+            }
         }
     }
 }
@@ -226,13 +235,15 @@ struct MyApp: App {
 
 ### Switch Tabs Programmatically
 
+Read the coordinator from the environment and call `select(tab:)`:
+
 ```swift
 struct HomeTab: View {
     @Environment(FlowTabCoordinator<MyTabs>.self) var tabCoordinator
 
     var body: some View {
-        Button("Go to Profile") {
-            tabCoordinator.select(tab: .profile)
+        Button("Go to Second") {
+            tabCoordinator.select(tab: .second)
         }
     }
 }
@@ -242,25 +253,28 @@ struct HomeTab: View {
 
 ## Combining Flows
 
-Tabs with nested stack and sheet flows:
+Each tab can own its own stack and its own presenter — they're fully independent because each layer manages its own state. A typical pattern looks like this:
 
 ```swift
-struct HomeTab: FlowView {
-    @State var coordinator = FlowStackCoordinator()
-    @State var sheetPresenter = FlowPresenter()
+struct SecondTab: View {
+    @State var coordinator: FlowStackCoordinator = .init()
+    @State var sheetPresenter: FlowPresenter = .init()
 
     var body: some View {
         FlowStack(coordinator: coordinator) {
             VStack {
-                Text("Home")
-                    .destination(DetailView.self)
-
-                Button("Push Detail") {
-                    coordinator.push(DetailView())
+                Button("Push A") {
+                    coordinator.push(SecondTabRoutes.viewA)
                 }
 
                 Button("Present Sheet") {
                     sheetPresenter.present()
+                }
+            }
+            .navigationDestination(for: SecondTabRoutes.self) { route in
+                switch route {
+                case .viewA: ViewA()
+                case .viewB: ViewB()
                 }
             }
         }
@@ -275,29 +289,16 @@ struct HomeTab: FlowView {
 
 ## Codable & Path Persistence
 
-Flow coordinators conform to `Codable` to support path persistence and restoration. The `FlowRoute` protocol does not require `Codable`—use it when you need persistable navigation.
+All Flow coordinators conform to `Codable` so you can persist navigation state (e.g. for scene restoration or deep linking). There's one thing to be careful about: `NavigationPath` can only encode values that are themselves `Codable`.
 
-### When to use Codable routes
+`FlowRoute` already requires `Hashable & Codable`, so any route type you define works out of the box. But `FlowStackCoordinator.push` also has an overload that accepts any `Hashable` value — if you push something non-Codable through it, encoding the coordinator will throw `EncodingError.invalidValue` with the message *"Path contains non-Codable values"*.
 
-- **Path persistence** — Encoding the coordinator (e.g. for state restoration) only succeeds when every value in the path is `Codable`.
-- **Enum routes** — Raw-value or associated-value enums are typically `Codable` and work well:
+A few practical notes:
 
-```swift
-enum AppRoute: Int, FlowRoute {
-    case home
-    case profile
-    case settings
-
-    var destination: some View { /* ... */ }
-}
-```
-
-- **FlowView** — Struct views conform to `Codable` only if their stored properties are `Codable`. Views with `@State`, `@StateObject`, or other non-Codable properties cannot participate in path persistence.
-- **`push` overload** — Use `push` with a `Codable` route to get compile-time assurance that the path can be encoded.
-
-### Path Persistence
-
-`FlowStackCoordinator` uses `NavigationPath.CodableRepresentation` for encoding and decoding the stack. If the path contains any non-Codable value, encoding throws `EncodingError.invalidValue` with "Path contains non-Codable values".
+- **`FlowStackCoordinator`\*, `FlowTabCoordinator`, and `FlowPresenter` are Codable**, so they can be persisted and restored.
+- **Prefer `FlowRoute` enums for persistable stacks.** They give you compile-time assurance that the path is encodable.
+- **`FlowStackCoordinator`** will only be encoded if all of the components of its `path` are `Codable`.
+- **`FlowPresenter` is Codable,** but only `isPresented` is encoded — `onPresent` and `onDismiss` closures are not restored on decode, so re-attach them after restoration if you need them.
 
 ---
 
