@@ -1,7 +1,7 @@
 import SwiftUI
 import Flow
 
-struct ViewA: FlowView {
+struct ViewA: View {
     var body: some View {
         Text("View A")
     }
