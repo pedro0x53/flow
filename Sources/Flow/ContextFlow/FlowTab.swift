@@ -20,4 +20,18 @@ extension Tab where Value: FlowTab, Label == DefaultTabLabel, Content: View {
     }
 }
 
+public extension FlowTab {
+    @TabContentBuilder<Self>
+    func callAsFunction<Content: View>(
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some TabContent<Self> {
+        switch label.image {
+        case .system(let name):
+            Tab(title, systemImage: name, value: self, content: content)
+        case .named(let name):
+            Tab(title, image: name, value: self, content: content)
+        }
+    }
+}
+
 public protocol FlowTabs: FlowTab, FlowTabOptions {}

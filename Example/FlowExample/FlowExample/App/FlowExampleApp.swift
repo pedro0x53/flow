@@ -8,12 +8,12 @@ struct FlowExampleApp: App {
     var body: some Scene {
         WindowGroup {
             FlowTabView(tabCoordinator: tabCoordinator) {
-                Tab(MyTabs.first) {
+                MyTabs.first {
                     FirstTab()
                 }
 
-                Tab(MyTabs.second) {
-                    FirstTab()
+                MyTabs.second {
+                    SecondTab()
                 }
             }
         }
