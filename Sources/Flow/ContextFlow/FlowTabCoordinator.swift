@@ -3,7 +3,7 @@ import Observation
 import SwiftUI
 
 @Observable
-public final class FlowTabCoordinator<Options: FlowTabOptions> {
+public final class FlowTabCoordinator<Options: FlowTabOptions>: Codable {
     public var selectedTab: Options.Tab
 
     public init(tab: Options.Tab) {
@@ -15,7 +15,7 @@ public final class FlowTabCoordinator<Options: FlowTabOptions> {
     }
 }
 
-extension FlowTabCoordinator: Codable where Options.Tab: Codable {
+extension FlowTabCoordinator {
     // MARK: Codable conformance
     private enum CodingKeys: String, CodingKey {
         case selectedTab
