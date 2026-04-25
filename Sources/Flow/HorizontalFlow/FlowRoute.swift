@@ -4,20 +4,20 @@ import SwiftUI
 public protocol FlowRoute: Hashable, Codable {}
 
 public extension FlowRoute {
-    public func callAsFunction<Label: View, Destination: View>(
+    func callAsFunction<Label: View, Destination: View>(
         @ViewBuilder _ label: @escaping () -> Label,
         @ViewBuilder destination: @escaping () -> Destination
     ) -> some View {
         NavigationLink(destination: destination, label: label)
     }
 
-    public func callAsFunction<Label: View>(
+    func callAsFunction<Label: View>(
         @ViewBuilder _ label: @escaping () -> Label
     ) -> some View {
         NavigationLink(value: self, label: label)
     }
 
-    public func callAsFunction(
+    func callAsFunction(
         _ title: String,
     ) -> some View {
         NavigationLink(title, value: self)
